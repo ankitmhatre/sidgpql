@@ -4,21 +4,28 @@ import { useQuery } from "@apollo/client";
 import queries from "../queries";
 
 export default function Home() {
-  const [pageNo, setPageNum] = useState(1);
+  const [pageNum, setPageNum] = useState(1);
+  const [ unsplashImages, setUnsplashImages ] = useState([]);
 
-  const { loading, error, data } = useQuery(queries.UNSPLASH, {
-    variables: {
-      pageNum: pageNo,
-    },
+  const { loading, error, data, refetch } = useQuery(queries.UNSPLASH, {    
+    variables: { pageNum },
+    fetchPolicy: "cache-and-network",
   });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :</p>;
 
+
+
   function loadMore(){
-    var pgnum = pageNo;
+ var pgnum = pageNum;
     pgnum++;
-    setPageNum(pgnum)
+    setPageNum(pgnum);
+
+
+   
+    refetch();
+   
   }
   return (
     <>
@@ -38,10 +45,7 @@ export default function Home() {
         );
       })}
 
-
-      <button onclick={loadMore}>
-Load More
-</button>
+      <button navlink onClick={loadMore}>Load More</button>
     </>
   );
 }

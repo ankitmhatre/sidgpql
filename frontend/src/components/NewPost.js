@@ -24,8 +24,8 @@ window.location.reload();
     }
   return (
     <center>
-    <span> Create a post</span>
       <form method="POST" onSubmit={addImage} style={{color:'#000', background:'#fff', padding:'64px', width:'40%'}}>
+      <span> Create a post</span><br></br>
       <label>Description</label>
         <input type="text" id="description" />
         <br />

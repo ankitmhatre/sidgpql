@@ -23,6 +23,8 @@ export default function Posts(){
 
 
         <>
+        <a href = "/new-post">
+        <span>Upload a post</span> </a>
     
         {data.userPostedImages!==null ? (data.userPostedImages.map((k, v) => {
           return (

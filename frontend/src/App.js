@@ -45,20 +45,22 @@ function App() {
 
   return (
     <div className="App">
+<nav>
+<ul>
+
 
 <a href = "/">
   <li>Home</li>
-</a>
+</a><span>  |   </span>
 <a href = "/bin">
   <li>Bin</li>
-</a>
+</a> <span>  |   </span>
 <a href = "/my-posts">
   <li>My Posts</li>
 </a>
-<a href = "/new-post">
-  <li>New Post</li>
-</a>
 
+</ul>
+</nav>
 
 
 <RouterProvider router={router} />

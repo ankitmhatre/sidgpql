@@ -6,7 +6,7 @@ import {
   RouterProvider,
   Route,
   Link,
-} from "react-router-dom"
+} from "react-router-dom";
 
 import React from "react";
 import Bin from "./components/Bin";
@@ -14,12 +14,7 @@ import NewPost from "./components/NewPost";
 import Posts from "./components/Posts";
 import Home from "./components/Home";
 
-
 function App() {
-
-
-
-
   const router = createBrowserRouter([
     {
       path: "/",
@@ -39,32 +34,25 @@ function App() {
     },
   ]);
 
-
-
-
-
   return (
     <div className="App">
-<nav>
-<ul>
+      <nav>
+        <ul>
+          <a href="/">
+            <li>Home</li>
+          </a>
+          <span> | </span>
+          <a href="/bin">
+            <li>Bin</li>
+          </a>{" "}
+          <span> | </span>
+          <a href="/my-posts">
+            <li>My Posts</li>
+          </a>
+        </ul>
+      </nav>
 
-
-<a href = "/">
-  <li>Home</li>
-</a><span>  |   </span>
-<a href = "/bin">
-  <li>Bin</li>
-</a> <span>  |   </span>
-<a href = "/my-posts">
-  <li>My Posts</li>
-</a>
-
-</ul>
-</nav>
-
-
-<RouterProvider router={router} />
-
+      <RouterProvider router={router} />
     </div>
   );
 }

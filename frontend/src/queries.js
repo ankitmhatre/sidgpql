@@ -30,7 +30,7 @@ query unsplash($pageNum: Int){
   }`
 
 
-  const USER_POSTED = gql`query posted{
+  const USER_POSTED = gql`query userPostedImages{
     userPostedImages{
     id
     url

@@ -14,7 +14,7 @@ function ImagePost({ k }) {
   }
   return (
     <>
-      <center style={{ marginTop: "127px" }}>
+      <center style={{ margin: "32px" }}>
         <span style={{ color: "#fff" }}> {k.description}</span>
         <br />
         <span style={{ color: "#fff" }}>an image by: {k.posterName}</span>

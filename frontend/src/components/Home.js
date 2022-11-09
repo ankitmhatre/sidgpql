@@ -18,12 +18,7 @@ export default function Home() {
 
 
   function loadMore(){
- var pgnum = pageNum;
-    pgnum++;
-    setPageNum(pgnum);
-
-
-   
+    setPageNum(pageNum+1);
     refetch();
    
   }
@@ -45,7 +40,7 @@ export default function Home() {
         );
       })}
 
-      <button navlink onClick={loadMore}>Load More</button>
+      <button  onClick={loadMore}>Load More</button>
     </>
   );
 }

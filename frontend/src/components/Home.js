@@ -18,31 +18,34 @@ export default function Home() {
     setPageNum(pageNum + 1);
     setScrollPos(window.scrollY);
     refetch();
-    
   }
-  console.log(data)
+  console.log(data);
 
-  if(data!==undefined && data !==null && data.unsplashImages!==undefined){
+  if (
+    data !== undefined &&
+    data !== null &&
+    data.unsplashImages !== undefined
+  ) {
     data.unsplashImages.map((k, v) => {
-             images.push(k);
-             })
+      images.push(k);
+    });
 
-             window.scrollTo(0, scrollPos);
+    window.scrollTo(0, scrollPos);
   }
 
   if (error) {
-    console.log(error)
-
+    console.log(error);
   }
   return (
     <>
       {images.map((k, v) => {
         return <ImagePost k={k} />;
       })}
-{
-    loading ? (<span>Loading......</span>) : <button onClick={loadMore}>Load More</button>
-}
-      
+      {loading ? (
+        <span>Loading......</span>
+      ) : (
+        <button onClick={loadMore}>Load More</button>
+      )}
     </>
   );
 }

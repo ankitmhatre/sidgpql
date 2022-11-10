@@ -10,22 +10,23 @@ query unsplash($pageNum: Int){
     description
     userPosted
     binned
+    numBinned
     }
   }
   `
 
 
   const UPDATE = gql`
-  mutation updateImage($id: ID!, $url: String, $posterName: String, $description: String, $userPosted: Boolean, $binned: Boolean){
+  mutation updateImage($id: ID!, $url: String, $posterName: String, $description: String, $userPosted: Boolean, $binned: Boolean, $numBinned:Int ){
     updateImage(id:$id,
-    url:$url,posterName:$posterName,description:$description,userPosted:$userPosted,binned:$binned){
+    url:$url,posterName:$posterName,description:$description,userPosted:$userPosted,binned:$binned, numBinned : $numBinned){
     id
     url
     posterName
     description
     userPosted
     binned
-
+    numBinned
     }
   }`
 
@@ -38,7 +39,7 @@ query unsplash($pageNum: Int){
     description
     userPosted
     binned
-
+    numBinned
     }
   }`
 
@@ -53,6 +54,7 @@ query binned{
   description
   userPosted
   binned
+  numBinned
   }
 }`
 
@@ -67,7 +69,7 @@ mutation uploadImage($url: String!, $description: String, $posterName: String){
   description
   userPosted
   binned
-  
+  numBinned
   }
 }
 `

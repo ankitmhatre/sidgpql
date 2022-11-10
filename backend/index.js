@@ -20,6 +20,7 @@ redisClient.connect().then(() => {
 });
 
 // Construct a schema, using GraphQL schema language
+// getTopTenBinnedPosts() : [ImagePost]
 const typeDefs = gql`
   type Query {
     unsplashImages(pageNum: Int): [ImagePost]
@@ -33,6 +34,7 @@ const typeDefs = gql`
     description: String
     userPosted: Boolean!
     binned: Boolean!
+    numBinned: Int!
   }
   type Mutation {
     updateImage(
@@ -42,6 +44,7 @@ const typeDefs = gql`
       description: String
       userPosted: Boolean
       binned: Boolean
+      numBinned: Int
     ): ImagePost
 
     uploadImage(
@@ -57,6 +60,23 @@ const typeDefs = gql`
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
+    // getTopTenBinnedPosts : async() =>{
+    //   let returnData = [];
+
+    //   const members = await redisClient.zRangeByScore("binned_images", 0, 10);
+    //   //async function(err,members){
+
+    //   if (members.length != 0) {
+    //     for (var m =0; m< Math.min(members.length, 10);i++) {
+    //       const jsonImageFromRedis = await redisClient.get(members[m]);
+    //       const recomposedImage = JSON.parse(jsonImageFromRedis);
+    //       returnData.push(recomposedImage);
+    //     }
+    //     return returnData;
+    //   }
+    //   return returnData;
+    // },
+
     userPostedImages: async () => {
       let returnData = [];
       const data = await redisClient.lRange("photos_list", 0, -1);
@@ -86,7 +106,8 @@ const resolvers = {
         for (let arr of data) {
           imageData.id = arr.id;
           imageData.url = arr.urls.thumb;
-          imageData.posterName = arr.user.name ? arr.user.name : "No Author";
+          imageData.numBinned = arr.likes;
+          imageData.posterName = arr.user.name ? arr.user.name : "";
           imageData.description = arr.description
             ? arr.description
             : arr.alt_description;
@@ -96,7 +117,6 @@ const resolvers = {
           existBin = await redisClient.get(arr.id);
           if (existBin) imageData.binned = true;
           else imageData.binned = false;
-          //   imageData.numBinned = arr.likes;
           returnData.push(imageData);
           imageData = {};
         }
@@ -111,12 +131,16 @@ const resolvers = {
     binnedImages: async () => {
       let returnData = [];
 
-      const members = await redisClient.sMembers("binned_images", 0, -1);
+      const members = await redisClient.zRangeByScoreWithScores(
+        "binned_images",
+        -Infinity,
+        Infinity
+      );
       //async function(err,members){
-
+      console.log(members);
       if (members.length != 0) {
-        for (let err of members) {
-          const jsonImageFromRedis = await redisClient.get(err);
+        for (var i = members.length - 1; i >= Math.max(0); i--) {
+          const jsonImageFromRedis = await redisClient.get(members[i].value);
           const recomposedImage = JSON.parse(jsonImageFromRedis);
           returnData.push(recomposedImage);
         }
@@ -135,6 +159,7 @@ const resolvers = {
         description: args.description,
         userPosted: true,
         binned: false,
+        numBinned: 0,
       };
 
       await redisClient.rPush("photos_list", redisId);
@@ -148,8 +173,8 @@ const resolvers = {
     },
 
     async updateImage(_, args) {
-      let redisId = args.id;
-
+      var redisId = await args.id;
+      console.log("binned", args.binned);
       if (args.binned) {
         const newImage = {
           id: redisId,
@@ -158,9 +183,14 @@ const resolvers = {
           description: args.description,
           userPosted: args.userPosted,
           binned: args.binned,
+          numBinned: args.numBinned,
         };
 
-        await redisClient.sAdd("binned_images", redisId);
+        await redisClient.zAdd("binned_images", {
+          score: args.numBinned,
+          value: redisId,
+        });
+
         await redisClient.del(redisId);
         const jsonBio = JSON.stringify(newImage);
         await redisClient.set(redisId, jsonBio);
@@ -169,7 +199,7 @@ const resolvers = {
 
         return recomposedImage;
       } else {
-        await redisClient.sRem("binned_images", redisId);
+        await redisClient.zRem("binned_images", redisId);
         await redisClient.del(redisId);
 
         const jsonImageFromRedis = await redisClient.get(redisId);
@@ -205,56 +235,8 @@ async function startServer() {
 startServer();
 const httpserver = http.createServer(app);
 
-app.get("/rest", function (req, res) {
-  res.json({ data: "api working" });
-});
-
-app.get("/j", function (req, res) {
-  fs.readFile(
-    path.join(__dirname, "./assets", "placeholder.json"),
-    "utf8",
-    (err, jsonString) => {
-      if (err) {
-        console.log("File read failed:", err);
-        return;
-      }
-      //   console.log('File data:', jsonString)
-
-      var l = JSON.parse(jsonString);
-
-      res.json(l);
-    }
-  );
-});
-
-app.get("/photos", async (req, res) => {
-  let cachedData = await redisClient.exists("photos_list");
-
-  if (cachedData) {
-    console.log("Data from Cache");
-    let showDetailPage = await redisClient.get("photos_list");
-    res.send(JSON.parse(showDetailPage));
-
-    return;
-  } else {
-    console.log("Data from Api");
-    //const unsplashApiResponse = [{id : 1}]
-    const unsplashApiResponse = await axios.get(
-      "https://api.unsplash.com/photos?client_id=FUANkq2fJtG-qRGo9nfn0w1_dbXDtY7xhe4F_yR9Kq4"
-    );
-    var r = unsplashApiResponse.data;
-
-    try {
-      await redisClient.set("photos_list", JSON.stringify(r));
-
-      res.json(r);
-    } catch (err) {
-      console.log(err);
-
-      res.status(404).json({ err });
-    }
-  }
-  return;
+app.get("/", function (req, res) {
+  res.json({ data: "server is running" });
 });
 
 app.listen(4000, function () {

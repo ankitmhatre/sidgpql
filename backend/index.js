@@ -71,9 +71,13 @@ const resolvers = {
       );
       //async function(err,members){
       console.log(members);
-      if (members.length != 0) {
-        for (var i = members.length - 1; i >= Math.max(0); i--) {
-          const jsonImageFromRedis = await redisClient.get(members[i].value);
+    var revMem =  members.reverse()
+
+    console.log(revMem);
+      if (revMem.length != 0) {
+        for (var i = 0; i < Math.min(10, revMem.length); i++) {
+          console.log(revMem[i].value)
+          const jsonImageFromRedis = await redisClient.get(revMem[i].value);
           const recomposedImage = JSON.parse(jsonImageFromRedis);
           returnData.push(recomposedImage);
         }

@@ -16,6 +16,22 @@ query unsplash($pageNum: Int){
   `
 
 
+  const GETTOPBINNED =gql`
+  
+query binned{
+  getTopTenBinnedPosts{
+  id
+  url
+  posterName
+  description
+  userPosted
+  binned
+  numBinned
+  }
+  
+}`
+
+
   const UPDATE = gql`
   mutation updateImage($id: ID!, $url: String, $posterName: String, $description: String, $userPosted: Boolean, $binned: Boolean, $numBinned:Int ){
     updateImage(id:$id,
@@ -79,5 +95,6 @@ mutation uploadImage($url: String!, $description: String, $posterName: String){
     UPDATE,
     BINNED,
     USER_POSTED,
-    UPLOAD_IMAGE
+    UPLOAD_IMAGE,
+    GETTOPBINNED
   }

@@ -13,6 +13,7 @@ import Bin from "./components/Bin";
 import NewPost from "./components/NewPost";
 import Posts from "./components/Posts";
 import Home from "./components/Home";
+import Popularity from "./components/Popularity";
 
 function App() {
   const router = createBrowserRouter([
@@ -31,6 +32,10 @@ function App() {
     {
       path: "/new-post",
       element: <NewPost />,
+    },
+    {
+      path: "/popularity",
+      element: <Popularity />,
     },
   ]);
 

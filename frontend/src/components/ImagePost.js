@@ -1,11 +1,10 @@
 import { useMutation } from "@apollo/client";
-import React from "react";
+import React, { useState } from "react";
 import queries from "../queries";
 
 function ImagePost({ k }) {
 
 
-    
   const [mutateFunction, { data, loading, error }] = useMutation(
     queries.UPDATE
   );
@@ -14,6 +13,21 @@ function ImagePost({ k }) {
     mutateFunction({
       variables: Object.assign({}, k, { binned: !k.binned }),
     });
+  }
+
+
+  
+  if(data){
+   if(data.updateImage ===null){
+//deleted
+console.log("removed from bin")
+   }else{
+    console.log("added to bin")
+   }
+    console.log("data",data)
+    console.log("k", k)
+
+
   }
   return (
     <>

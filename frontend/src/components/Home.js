@@ -9,11 +9,17 @@ export default function Home() {
   const [pageNum, setPageNum] = useState(1);
   const [images, setImages] = useState([]);
   const [scrollPos, setScrollPos] = useState(0);
+
+
+
+
   const { loading, error, data, refetch } = useQuery(queries.UNSPLASH, {
     variables: { pageNum },
     fetchPolicy: "cache-and-network",
   });
 
+
+ 
   function loadMore() {
     setScrollPos(window.scrollY);
     setPageNum(pageNum + 1);
@@ -39,7 +45,7 @@ export default function Home() {
   return (
     <>
       {images.map((k, v) => {
-        return <ImagePost k={k} />;
+        return <ImagePost k={k}  key={v}/>;
       })}
       {loading ? (
         <span>Loading......</span>

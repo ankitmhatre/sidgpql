@@ -26,6 +26,7 @@ const typeDefs = gql`
     unsplashImages(pageNum: Int): [ImagePost]
     userPostedImages: [ImagePost]
     binnedImages: [ImagePost]
+    getTopTenBinnedPosts : [ImagePost]
   }
   type ImagePost {
     id: ID!
@@ -60,22 +61,26 @@ const typeDefs = gql`
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    // getTopTenBinnedPosts : async() =>{
-    //   let returnData = [];
+    getTopTenBinnedPosts :async () => {
+      let returnData = [];
 
-    //   const members = await redisClient.zRangeByScore("binned_images", 0, 10);
-    //   //async function(err,members){
-
-    //   if (members.length != 0) {
-    //     for (var m =0; m< Math.min(members.length, 10);i++) {
-    //       const jsonImageFromRedis = await redisClient.get(members[m]);
-    //       const recomposedImage = JSON.parse(jsonImageFromRedis);
-    //       returnData.push(recomposedImage);
-    //     }
-    //     return returnData;
-    //   }
-    //   return returnData;
-    // },
+      const members = await redisClient.zRangeByScoreWithScores(
+        "binned_images",
+        -Infinity,
+        Infinity
+      );
+      //async function(err,members){
+      console.log(members);
+      if (members.length != 0) {
+        for (var i = members.length - 1; i >= Math.max(0); i--) {
+          const jsonImageFromRedis = await redisClient.get(members[i].value);
+          const recomposedImage = JSON.parse(jsonImageFromRedis);
+          returnData.push(recomposedImage);
+        }
+        return returnData;
+      }
+      return returnData;
+    },
 
     userPostedImages: async () => {
       let returnData = [];
@@ -137,15 +142,21 @@ const resolvers = {
         Infinity
       );
       //async function(err,members){
-      console.log(members);
+    
       if (members.length != 0) {
-        for (var i = members.length - 1; i >= Math.max(0); i--) {
-          const jsonImageFromRedis = await redisClient.get(members[i].value);
+      for(let a of members){
+
+          const jsonImageFromRedis = await redisClient.get(a.value);
+
+          
           const recomposedImage = JSON.parse(jsonImageFromRedis);
           returnData.push(recomposedImage);
-        }
-        return returnData;
+          console.log(returnData.length)
       }
+        
+      }
+
+
       return returnData;
     },
   },

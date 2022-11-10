@@ -3,6 +3,9 @@ import React from "react";
 import queries from "../queries";
 
 function ImagePost({ k }) {
+
+
+    
   const [mutateFunction, { data, loading, error }] = useMutation(
     queries.UPDATE
   );

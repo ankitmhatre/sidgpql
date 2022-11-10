@@ -15,8 +15,8 @@ export default function Home() {
   });
 
   function loadMore() {
-    setPageNum(pageNum + 1);
     setScrollPos(window.scrollY);
+    setPageNum(pageNum + 1);
     refetch();
   }
   console.log(data);
